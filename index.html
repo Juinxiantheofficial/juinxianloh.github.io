@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Juin Xian Loh</title>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #f6f4f0;
+      --surface:     #ffffff;
+      --border:      #e2ddd7;
+      --border-soft: #ece8e3;
+      --accent:      #2d6a4f;
+      --accent-dim:  rgba(45,106,79,0.09);
+      --text:        #18180f;
+      --muted:       #67655e;
+      --soft:        #9c9890;
+      --serif:       'Libre Baskerville', Georgia, serif;
+      --sans:        'Jost', system-ui, sans-serif;
+      --nav-h:       64px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-weight: 300;
+      font-size: 15.5px;
+      line-height: 1.78;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+      height: var(--nav-h);
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0 4rem;
+      transition: background 0.38s, border-color 0.38s;
+      border-bottom: 1px solid transparent;
+    }
+    nav.stuck {
+      background: rgba(246,244,240,0.96);
+      border-color: var(--border);
+      backdrop-filter: blur(12px);
+    }
+    .nav-logo {
+      font-family: var(--serif); font-style: italic; font-size: 1rem;
+      color: var(--text); text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.72rem; font-weight: 400; letter-spacing: 0.09em;
+      text-transform: uppercase; color: var(--muted); text-decoration: none;
+      position: relative; transition: color 0.2s;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; left: 0; bottom: -4px;
+      width: 0; height: 1px; background: var(--accent); transition: width 0.25s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+
+    /* ─── PAGE-SECTIONS ─── */
+    /* Every section is at least the full viewport height */
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: calc(var(--nav-h) + 3rem) 4rem 4rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* inner width constraint */
+    .page-inner {
+      max-width: 1040px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* ─── SECTION HEADER ─── */
+    .sec-hd {
+      display: flex; align-items: baseline; gap: 1.1rem;
+      padding-bottom: 1.2rem; margin-bottom: 3rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .sec-n { font-size: 0.65rem; letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase; }
+    .sec-t { font-family: var(--serif); font-size: 1.75rem; font-weight: 400; }
+    .sec-icon { margin-left: auto; font-size: 1.1rem; opacity: 0.4; }
+
+    /* ─── HERO (its own page) ─── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 0 4rem;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .hero-inner { max-width: 1040px; margin: 0 auto; width: 100%; }
+
+    .h-eyebrow {
+      font-size: 0.71rem; font-weight: 400; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 1.6rem;
+      opacity: 0; animation: fadeUp 0.7s 0.2s ease forwards;
+    }
+    .h-name {
+      font-family: var(--serif);
+      font-size: clamp(3rem, 7.5vw, 6.4rem);
+      font-weight: 400; line-height: 1.07; letter-spacing: -0.025em;
+      margin-bottom: 1.8rem;
+      opacity: 0; animation: fadeUp 0.8s 0.4s ease forwards;
+    }
+    .h-name em { font-style: italic; color: var(--accent); }
+    .h-sub {
+      max-width: 520px; font-size: 1rem; color: var(--muted);
+      line-height: 1.9; margin-bottom: 2.5rem;
+      opacity: 0; animation: fadeUp 0.8s 0.6s ease forwards;
+    }
+    .h-pills {
+      display: flex; flex-wrap: wrap; gap: 0.55rem;
+      opacity: 0; animation: fadeUp 0.8s 0.8s ease forwards;
+    }
+    .pill {
+      font-size: 0.73rem; padding: 0.3rem 0.85rem;
+      border: 1px solid var(--border); color: var(--muted); border-radius: 2px;
+    }
+    .pill.hi { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+    /* scroll indicator */
+    .h-scroll {
+      position: absolute; bottom: 2.6rem; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      opacity: 0; animation: fadeUp 0.6s 1.2s ease forwards;
+    }
+    .h-scroll span { font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--soft); }
+    .h-scroll-line {
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, var(--soft), transparent);
+      animation: pulse 2.2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:.3} 50%{opacity:.9} }
+
+    /* ─── ABOUT ─── */
+    .about-layout {
+      display: grid; grid-template-columns: 1.5fr 1fr; gap: 4rem; align-items: start;
+    }
+
+    .sub-hd {
+      font-size: 0.67rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--accent); margin: 2.4rem 0 1.1rem;
+      padding-bottom: 0.55rem; border-bottom: 1px solid var(--border-soft);
+    }
+    .sub-hd:first-child { margin-top: 0; }
+
+    .bio p { font-size: 0.96rem; color: var(--muted); line-height: 1.92; margin-bottom: 0.9rem; }
+    .bio p:last-child { margin-bottom: 0; }
+    .bio strong { color: var(--text); font-weight: 500; }
+
+    /* timeline */
+    .tl { position: relative; padding-left: 1.7rem; }
+    .tl::before {
+      content:''; position:absolute; left:0; top:0.5rem; bottom:0.5rem;
+      width:1px; background: linear-gradient(to bottom, var(--accent), var(--border));
+    }
+    .tl-item { position:relative; padding-bottom:2rem; padding-left:1.5rem; }
+    .tl-item:last-child { padding-bottom:0; }
+    .tl-dot {
+      position:absolute; left:-1.7rem; top:0.42rem;
+      width:8px; height:8px; border-radius:50%;
+      background:var(--accent); border:2px solid var(--bg); box-shadow:0 0 0 1px var(--accent);
+    }
+    .tl-year { font-size:0.64rem; letter-spacing:0.13em; text-transform:uppercase; color:var(--accent); margin-bottom:0.2rem; }
+    .tl-title { font-family:var(--serif); font-size:1rem; font-weight:400; margin-bottom:0.2rem; }
+    .tl-place { font-size:0.8rem; color:var(--soft); font-style:italic; margin-bottom:0.4rem; }
+    .tl-desc { font-size:0.86rem; color:var(--muted); line-height:1.72; }
+
+    /* info card */
+    .card { background:var(--surface); border:1px solid var(--border); padding:1.6rem 1.8rem; }
+    .card + .card { margin-top:1.1rem; }
+    .card-label { font-size:0.64rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent); margin-bottom:0.95rem; }
+    .info-rows { display:flex; flex-direction:column; gap:0.72rem; }
+    .info-row { font-size:0.85rem; color:var(--muted); display:flex; gap:0.6rem; align-items:flex-start; }
+    .arr { color:var(--accent); flex-shrink:0; }
+
+    /* ─── PROJECTS ─── */
+    .proj-list { display:flex; flex-direction:column; gap:0; }
+    .proj-item {
+      display:grid; grid-template-columns:3rem 1fr;
+      gap:1.6rem; align-items:start;
+      padding:1.8rem 0; border-bottom:1px solid var(--border-soft);
+      text-decoration:none; color:inherit;
+      transition:background 0.2s;
+    }
+    .proj-item:first-child { border-top:1px solid var(--border-soft); }
+    .proj-item:hover { background:var(--surface); }
+    .proj-num { font-size:0.62rem; letter-spacing:0.1em; color:var(--soft); padding-top:0.25rem; }
+    .proj-body h3 { font-family:var(--serif); font-size:1.08rem; font-weight:400; margin-bottom:0.4rem; }
+    .proj-body p { font-size:0.87rem; color:var(--muted); line-height:1.74; margin-bottom:0.85rem; }
+    .proj-chips { display:flex; flex-wrap:wrap; gap:0.4rem; }
+    .chip {
+      font-size:0.64rem; letter-spacing:0.04em; padding:0.17rem 0.56rem;
+      background:var(--accent-dim); color:var(--accent); border-radius:2px;
+    }
+
+    /* skills row */
+    .skills-row {
+      display:flex; flex-wrap:wrap; gap:0.5rem;
+      margin-top:2.2rem; padding-top:1.8rem; border-top:1px solid var(--border-soft);
+    }
+    .skills-label {
+      font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase;
+      color:var(--soft); align-self:center; margin-right:0.4rem; white-space:nowrap;
+    }
+    .skill-tag {
+      font-size:0.72rem; padding:0.28rem 0.78rem;
+      border:1px solid var(--border); color:var(--muted); border-radius:2px;
+      transition:border-color 0.2s, color 0.2s;
+    }
+    .skill-tag:hover { border-color:var(--accent); color:var(--accent); }
+
+    /* ─── ACHIEVEMENTS ─── */
+    .ach-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2.5rem; }
+    .ach-col-hd {
+      font-size:0.67rem; font-weight:500; letter-spacing:0.14em; text-transform:uppercase;
+      color:var(--accent); padding-bottom:0.75rem; margin-bottom:1.1rem;
+      border-bottom:2px solid var(--accent);
+    }
+    .ach-item { padding:1rem 0; border-bottom:1px solid var(--border-soft); }
+    .ach-item:last-child { border-bottom:none; }
+    .ach-year { font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent); }
+    .ach-title { font-family:var(--serif); font-size:0.95rem; font-weight:400; line-height:1.4; margin:0.15rem 0; }
+    .ach-body { font-size:0.82rem; color:var(--muted); line-height:1.68; }
+
+    /* ─── CONTACT ─── */
+    .contact-layout { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:start; }
+    .contact-text p { font-size:0.97rem; color:var(--muted); line-height:1.9; margin-bottom:0.95rem; }
+    .clinks { display:flex; flex-direction:column; gap:0.8rem; }
+    .clink {
+      display:flex; align-items:center; gap:1rem; padding:1rem 1.3rem;
+      border:1px solid var(--border); background:var(--surface);
+      text-decoration:none; color:var(--text); font-size:0.86rem;
+      transition:border-color 0.2s, background 0.2s, color 0.2s;
+    }
+    .clink:hover { border-color:var(--accent); background:var(--accent-dim); color:var(--accent); }
+    .clink-icon { font-size:1rem; flex-shrink:0; }
+    .clink-badge { margin-left:auto; font-size:0.63rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--soft); }
+    .clink:hover .clink-badge { color:var(--accent); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      max-width:1040px; margin:0 auto;
+      padding:1.8rem 4rem;
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    footer p { font-size:0.68rem; letter-spacing:0.06em; color:var(--soft); }
+
+    /* ─── REVEAL ─── */
+    .reveal { opacity:0; transform:translateY(18px); transition:opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.in { opacity:1; transform:none; }
+
+    /* ─── KEYFRAMES ─── */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
+
+    /* ─── RESPONSIVE ─── */
+    @media(max-width:900px){
+      .ach-grid { grid-template-columns:1fr; gap:2rem; }
+    }
+    @media(max-width:768px){
+      nav, #hero, .page { padding-left:1.5rem; padding-right:1.5rem; }
+      .nav-links { gap:1.2rem; }
+      .nav-links a { font-size:0.67rem; }
+      .about-layout, .contact-layout { grid-template-columns:1fr; gap:2.5rem; }
+      footer { flex-direction:column; gap:0.4rem; text-align:center; padding:1.8rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav id="nav">
+  <a href="#hero" class="nav-logo">Juin Xian Loh</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#achievements">Achievements</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ═══ PAGE 0 · HERO ═══ -->
+<section id="hero">
+  <div class="hero-inner">
+    <p class="h-eyebrow">Research Scientist &amp; Policy Associate</p>
+    <h1 class="h-name">Juin Xian<br/><em>Loh</em></h1>
+    <p class="h-sub">
+      Advancing sustainable aviation fuel research and shaping technology policy across Asia —
+      where rigorous science meets thoughtful governance.
+    </p>
+    <div class="h-pills">
+      <span class="pill hi">Sustainable Aviation Fuel</span>
+      <span class="pill hi">Technology Policy</span>
+      <span class="pill">Asia SAF Association</span>
+      <span class="pill">Singapore 🇸🇬</span>
+    </div>
+  </div>
+  <div class="h-scroll"><span>Scroll</span><div class="h-scroll-line"></div></div>
+</section>
+
+<!-- ═══ PAGE 1 · ABOUT ═══ -->
+<section class="page" id="about">
+  <div class="page-inner reveal">
+    <div class="sec-hd">
+      <span class="sec-n">01</span>
+      <h2 class="sec-t">About Me</h2>
+      <span class="sec-icon">✦</span>
+    </div>
+
+    <div class="about-layout">
+      <!-- Left: bio + timelines -->
+      <div>
+        <p class="sub-hd">Background</p>
+        <div class="bio">
+          <p>I'm <strong>Juin Xian Loh</strong>, a research scientist specialising in <strong>sustainable aviation fuel (SAF)</strong> — one of the most critical levers for decarbonising commercial aviation. My work sits at the intersection of chemistry, engineering, and energy systems.</p>
+          <p>Alongside my research, I serve as an <strong>associate in technology policy and governance</strong> at the Asia SAF Association, translating scientific findings into actionable frameworks for Asia Pacific's aviation sector.</p>
+          <p>Bridging rigorous science and thoughtful governance is what drives me — and outside the lab, sport and music keep me grounded.</p>
+        </div>
+
+        <p class="sub-hd">Academic Foundations</p>
+        <div class="tl">
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <p class="tl-year">Add Year</p>
+            <h3 class="tl-title">Your Degree — Your Field</h3>
+            <p class="tl-place">Your University</p>
+            <p class="tl-desc">Describe your degree, dissertation, key modules, or awards. Replace with your real background.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <p class="tl-year">Add Year</p>
+            <h3 class="tl-title">Earlier Degree or Qualification</h3>
+            <p class="tl-place">School / Institution</p>
+            <p class="tl-desc">Add more milestones — scholarships, exchange programmes, notable results.</p>
+          </div>
+        </div>
+
+        <p class="sub-hd">Work Experience</p>
+        <div class="tl">
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <p class="tl-year">Present</p>
+            <h3 class="tl-title">Research Scientist — SAF</h3>
+            <p class="tl-place">Research Institution, Singapore</p>
+            <p class="tl-desc">Applied research on SAF production pathways, feedstock evaluation, and lifecycle emissions assessment.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <p class="tl-year">Present</p>
+            <h3 class="tl-title">Associate, Technology Policy &amp; Governance</h3>
+            <p class="tl-place">Asia SAF Association</p>
+            <p class="tl-desc">Translating SAF research into governance frameworks for Asia Pacific, aligned with ICAO CORSIA.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <p class="tl-year">Add Year</p>
+            <h3 class="tl-title">Previous Role</h3>
+            <p class="tl-place">Organisation</p>
+            <p class="tl-desc">Describe a past internship, research assistant position, or earlier job.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: cards -->
+      <div>
+        <div class="card">
+          <p class="card-label">At a Glance</p>
+          <div class="info-rows">
+            <div class="info-row"><span class="arr">→</span>Research Scientist, SAF</div>
+            <div class="info-row"><span class="arr">→</span>Policy Associate, Asia SAF Association</div>
+            <div class="info-row"><span class="arr">→</span>Based in Singapore 🇸🇬</div>
+            <div class="info-row"><span class="arr">→</span>Focus: Sustainable aviation &amp; energy transition</div>
+            <div class="info-row"><span class="arr">→</span>Open to collaborations &amp; speaking invitations</div>
+          </div>
+        </div>
+        <div class="card">
+          <p class="card-label">Beyond Work</p>
+          <div class="info-rows">
+            <div class="info-row"><span class="arr">→</span>Sport (add yours)</div>
+            <div class="info-row"><span class="arr">→</span>Music — instrument (add yours)</div>
+            <div class="info-row"><span class="arr">→</span>Reading &amp; science communication</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PAGE 2 · PROJECTS ═══ -->
+<section class="page" id="projects">
+  <div class="page-inner reveal">
+    <div class="sec-hd">
+      <span class="sec-n">02</span>
+      <h2 class="sec-t">Projects</h2>
+      <span class="sec-icon">⚗️</span>
+    </div>
+
+    <div class="proj-list">
+      <a class="proj-item" href="#">
+        <span class="proj-num">001</span>
+        <div class="proj-body">
+          <h3>SAF Pathway Lifecycle Assessment</h3>
+          <p>Comparative greenhouse gas lifecycle analysis across multiple SAF production routes, benchmarked against fossil jet fuel. Provides the scientific basis for regional blending mandates and certification frameworks.</p>
+          <div class="proj-chips"><span class="chip">LCA</span><span class="chip">Emissions Analysis</span><span class="chip">Policy Brief</span></div>
+        </div>
+      </a>
+      <a class="proj-item" href="#">
+        <span class="proj-num">002</span>
+        <div class="proj-body">
+          <h3>Asia SAF Policy Framework</h3>
+          <p>Contributed to drafting governance recommendations for SAF adoption across Southeast Asian markets, aligning national strategies with ICAO's CORSIA mechanism and emerging blending mandates.</p>
+          <div class="proj-chips"><span class="chip">Technology Policy</span><span class="chip">CORSIA</span><span class="chip">ASEAN</span></div>
+        </div>
+      </a>
+      <a class="proj-item" href="#">
+        <span class="proj-num">003</span>
+        <div class="proj-body">
+          <h3>Feedstock Availability Mapping — Asia Pacific</h3>
+          <p>Regional analysis of sustainable feedstock sources across Asia Pacific — agricultural residues, municipal solid waste, and algae-based streams — to identify viable SAF supply chains.</p>
+          <div class="proj-chips"><span class="chip">Feedstock Research</span><span class="chip">Asia Pacific</span><span class="chip">Supply Chain</span></div>
+        </div>
+      </a>
+      <a class="proj-item" href="#">
+        <span class="proj-num">004</span>
+        <div class="proj-body">
+          <h3>Add Your Next Project</h3>
+          <p>Describe the project, its purpose, and outcomes. Link to a paper, report, or GitHub repo by updating the href on this item.</p>
+          <div class="proj-chips"><span class="chip">Skill / Tool</span><span class="chip">Topic</span></div>
+        </div>
+      </a>
+    </div>
+
+    <div class="skills-row">
+      <span class="skills-label">Skills</span>
+      <span class="skill-tag">Lifecycle Assessment</span>
+      <span class="skill-tag">SAF Chemistry</span>
+      <span class="skill-tag">Policy Writing</span>
+      <span class="skill-tag">Feedstock Analysis</span>
+      <span class="skill-tag">ICAO / CORSIA</span>
+      <span class="skill-tag">Stakeholder Engagement</span>
+      <span class="skill-tag">Scientific Writing</span>
+      <span class="skill-tag">Data Analysis</span>
+      <span class="skill-tag">Science Communication</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PAGE 3 · ACHIEVEMENTS ═══ -->
+<section class="page" id="achievements">
+  <div class="page-inner reveal">
+    <div class="sec-hd">
+      <span class="sec-n">03</span>
+      <h2 class="sec-t">Achievements</h2>
+      <span class="sec-icon">🏅</span>
+    </div>
+
+    <div class="ach-grid">
+      <!-- Academic -->
+      <div>
+        <p class="ach-col-hd">🎓 Academic</p>
+        <div class="ach-item">
+          <p class="ach-year">Add Year</p>
+          <p class="ach-title">Award or Scholarship Name</p>
+          <p class="ach-body">Institution or awarding body. A brief note on why you received it.</p>
+        </div>
+        <div class="ach-item">
+          <p class="ach-year">Add Year</p>
+          <p class="ach-title">Publication / Conference Paper</p>
+          <p class="ach-body">Journal or conference name. Short description or DOI link.</p>
+        </div>
+        <div class="ach-item">
+          <p class="ach-year">Add Year</p>
+          <p class="ach-title">Dean's List / Honour Roll</p>
+          <p class="ach-body">Institution. Any other academic recognition.</p>
+        </div>
+        <div class="ach-item">
+          <p class="ach-year">Add Year</p>
+          <p class="ach-title">Research Grant or Fellowship</p>
+          <p class="ach-body">Funding body. Scope or value of the grant.</p>
+        </div>
+      </div>
+
+      <!-- Sports -->
+      <div>
+        <p class="ach-col-hd">🏅 Sports</p>
+        <div class="ach-item">
+          <p class="ach-year">Add Year</p>
+          <p class="ach-title">Competition — Medal / Placement</p>
+          <p class="ach-body">Event or league. Sport, result, what it took.</p>
+        </div>
+        <div class="ach-item">
+          <p class="ach-year">Add Year</p>
+          <p class="ach-title">Captain / Leadership Role</p>
+          <p class="ach-body">Team or club. Leadership positions held.</p>
+        </div>
+        <div class="ach-item">
+          <p class="ach-year">Add Year</p>
+          <p class="ach-title">Personal Best or Record</p>
+          <p class="ach-body">Context of the achievement. PB, ranking, or podium finish.</p>
+        </div>
+        <div class="ach-item">
+          <p class="ach-year">Add Year</p>
+          <p class="ach-title">School / University Colours</p>
+          <p class="ach-body">Awarded for. Colours, colours with distinction, or letters.</p>
+        </div>
+      </div>
+
+      <!-- Music -->
+      <div>
+        <p class="ach-col-hd">🎵 Music</p>
+        <div class="ach-item">
+          <p class="ach-year">Add Year</p>
+          <p class="ach-title">Grade Exam — Instrument</p>
+          <p class="ach-body">Examining board (e.g. ABRSM). Grade and result.</p>
+        </div>
+        <div class="ach-item">
+          <p class="ach-year">Add Year</p>
+          <p class="ach-title">Performance or Recital</p>
+          <p class="ach-body">Venue or event. Solo, ensemble, repertoire.</p>
+        </div>
+        <div class="ach-item">
+          <p class="ach-year">Add Year</p>
+          <p class="ach-title">Competition or Festival</p>
+          <p class="ach-body">Competition name. Result or recognition received.</p>
+        </div>
+        <div class="ach-item">
+          <p class="ach-year">Add Year</p>
+          <p class="ach-title">Ensemble or Band Role</p>
+          <p class="ach-body">Group name and role. Concerts, recordings, or performances.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PAGE 4 · CONTACT ═══ -->
+<section class="page" id="contact">
+  <div class="page-inner reveal">
+    <div class="sec-hd">
+      <span class="sec-n">04</span>
+      <h2 class="sec-t">Contact</h2>
+      <span class="sec-icon">✉</span>
+    </div>
+    <div class="contact-layout">
+      <div class="contact-text">
+        <p>I'm always happy to hear from fellow researchers, policy practitioners, journalists, or anyone passionate about sustainable aviation and the energy transition in Asia.</p>
+        <p>Whether it's a research collaboration, a speaking invitation, a policy question, or simply a conversation about SAF — reach out. I'll do my best to respond promptly.</p>
+      </div>
+      <div class="clinks">
+        <a href="mailto:juinxian@example.com" class="clink">
+          <span class="clink-icon">✉</span> juinxian@example.com
+          <span class="clink-badge">Email</span>
+        </a>
+        <a href="https://linkedin.com/in/juinxianloh" class="clink" target="_blank">
+          <span class="clink-icon">in</span> linkedin.com/in/juinxianloh
+          <span class="clink-badge">LinkedIn</span>
+        </a>
+        <a href="https://github.com/juinxianloh" class="clink" target="_blank">
+          <span class="clink-icon">⌥</span> github.com/juinxianloh
+          <span class="clink-badge">GitHub</span>
+        </a>
+        <a href="#" class="clink">
+          <span class="clink-icon">📄</span> Download CV
+          <span class="clink-badge">PDF</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 Juin Xian Loh</p>
+  <p>Singapore · Research · Policy · SAF</p>
+</footer>
+
+<script>
+  // sticky nav
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => nav.classList.toggle('stuck', window.scrollY > 60));
+
+  // active nav link based on scroll position
+  const sections = ['hero','about','projects','achievements','contact'];
+  const links = {};
+  sections.forEach(id => {
+    const el = document.querySelector(`.nav-links a[href="#${id}"]`);
+    if (el) links[id] = el;
+  });
+  window.addEventListener('scroll', () => {
+    let current = 'hero';
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && window.scrollY >= el.offsetTop - 120) current = id;
+    });
+    Object.values(links).forEach(l => l.classList.remove('active'));
+    if (links[current]) links[current].classList.add('active');
+  });
+
+  // scroll reveal
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
